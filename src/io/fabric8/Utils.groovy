@@ -305,6 +305,29 @@ def addAnnotationToBuild(annotation, value) {
 }
 
 @NonCPS
+def getSpaceLabelFromBuild() {
+    def flow = new Fabric8Commands()
+    if (flow.isOpenShift()) {
+        def buildName = getValidOpenShiftBuildName()
+        OpenShiftClient oClient = new DefaultOpenShiftClient()
+        def usersNamespace = getUsersNamespace()
+        echo "looking for ${buildName} in namespace ${usersNamespace}"
+        def labels = oClient.builds().inNamespace(usersNamespace).withName(buildName).get().getMetadata().getLabels()
+        if (labels != null) {
+            spaceLabel = labels.get("space")
+            if (spaceLabel != null) {
+                echo "Found label for space: '${spaceLabel}', in Build ${buildName}"
+                return spaceLabel
+            }
+        }
+        echo "No space label found in Build ${buildName}"
+    } else {
+        echo "Not running on openshift so skip adding annotation ${annotation}: value"
+    }
+    return ""
+}
+
+@NonCPS
 def getUsersNamespace() {
     def usersNamespace = getNamespace()
     if (usersNamespace.endsWith("-jenkins")) {

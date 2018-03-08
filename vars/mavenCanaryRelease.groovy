@@ -29,10 +29,6 @@ def call(body) {
         }
     }
     sh "mvn org.codehaus.mojo:versions-maven-plugin:2.5:set -U -DnewVersion=${config.version}"
-    sh "mvn clean -B -e -U deploy -Dmaven.test.skip=${skipTests} -P openshift"
-
-
-    junitResults(body);
 
     def buildName = ""
     try {
@@ -40,6 +36,16 @@ def call(body) {
     } catch (err) {
         echo "Failed to find buildName due to: ${err}"
     }
+
+    def spaceLabel = ""
+    if (buildName != null && !buildName.isEmpty()) {
+        spaceLabel = utils.getSpaceLabelFromBuild()
+    }
+
+    sh "mvn clean -B -e -U deploy -Dmaven.test.skip=${skipTests} -Dfabric8.space=\"${spaceLabel}\" -P openshift"
+
+
+    junitResults(body);
 
     if (buildName != null && !buildName.isEmpty()) {
         def buildUrl = "${env.BUILD_URL}"
