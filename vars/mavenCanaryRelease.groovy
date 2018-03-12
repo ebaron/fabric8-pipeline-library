@@ -24,7 +24,7 @@ def call(body) {
 
     def spaceLabel = ""
     if (buildName != null && !buildName.isEmpty()) {
-        spaceLabel = utils.getSpaceLabelFromBuild()
+        spaceLabel = utils.getSpaceLabelFromBuild(buildName)
     }
 
     sh "mvn clean -B -e -U deploy -Dmaven.test.skip=${skipTests} -Dfabric8.space=\"${spaceLabel}\" -P openshift"
