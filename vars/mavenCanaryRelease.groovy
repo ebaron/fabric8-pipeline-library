@@ -37,12 +37,15 @@ def call(body) {
         echo "Failed to find buildName due to: ${err}"
     }
 
-    def spaceLabel = ""
+    def spaceLabelArg = ""
     if (buildName != null && !buildName.isEmpty()) {
-        spaceLabel = utils.getSpaceLabelFromBuild(buildName)
+        def spaceLabel = utils.getSpaceLabelFromBuild(buildName)
+        if (!spaceLabel.isEmpty()) {
+            spaceLabelArg = "-Dfabric8.enricher.fmp-space-label.space=${spaceLabel}"
+        }
     }
 
-    sh "mvn clean -B -e -U deploy -Dmaven.test.skip=${skipTests} -Dfabric8.space=\"${spaceLabel}\" -P openshift"
+    sh "mvn clean -B -e -U deploy -Dmaven.test.skip=${skipTests} ${spaceLabelArg} -P openshift"
 
 
     junitResults(body);
