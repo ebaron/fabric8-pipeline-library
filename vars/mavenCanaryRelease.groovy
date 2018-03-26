@@ -39,9 +39,13 @@ def call(body) {
 
     def spaceLabelArg = ""
     if (buildName != null && !buildName.isEmpty()) {
-        def spaceLabel = utils.getSpaceLabelFromBuild(buildName)
-        if (!spaceLabel.isEmpty()) {
-            spaceLabelArg = "-Dfabric8.enricher.fmp-space-label.space=${spaceLabel}"
+        try {
+            def spaceLabel = utils.getSpaceLabelFromBuild(buildName)
+            if (!spaceLabel.isEmpty()) {
+                spaceLabelArg = "-Dfabric8.enricher.fmp-space-label.space=${spaceLabel}"
+            }
+        } catch (err) {
+            echo "Failed to read space label due to: ${err}"
         }
     }
 
