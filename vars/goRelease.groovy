@@ -36,7 +36,7 @@ def call(body) {
         container(name: 'go') {
             stage('build binary') {
 
-                def flow = new Fabric8Commands()
+                def flow = new io.fabric8.Fabric8Commands()
                 flow.setupGitSSH()
 
                 // if you want a nice N.N.N version number then use a VERSION file, if not default to short commit sha

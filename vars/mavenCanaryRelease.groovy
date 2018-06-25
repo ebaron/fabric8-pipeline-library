@@ -267,7 +267,7 @@ def hasFMPProfileForOSIO() {
             if (line.startsWith(versionPrefix)) {
                 def version = line.substring(versionPrefix.length()).trim()
                 if (!version.isEmpty()) {
-                    echo "Found FMP version ${versionStr}"
+                    echo "Found FMP version ${version}"
                     return (compareVersions(version, FMP_OSIO_MIN_VERSION) > 0)
                 }
             }
