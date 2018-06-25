@@ -44,8 +44,11 @@ def call(body) {
     if (buildName != null && !buildName.isEmpty()) {
         try {
             def spaceLabel = utils.getSpaceLabelFromBuild(buildName)
+            /* Space label enricher is part of 'osio' profile introduced in FMP 3.5.40.
+             * Check version before specifying the profile, as the resource goal will fail
+             * if the profile does not exist. */
             if (!spaceLabel.isEmpty() && hasFMPProfileForOSIO()) {
-                spaceLabelArg = "-Dfabric8.enricher.fmp-space-label.space=${spaceLabel}"
+                spaceLabelArg = "-Dfabric8.profile=osio -Dfabric8.enricher.osio-space-label.space=${spaceLabel}"
             }
         } catch (err) {
             echo "Failed to read space label due to: ${err}"
@@ -261,6 +264,8 @@ def addFMPDefinition(pomModel, fmpVersion) {
 def hasFMPProfileForOSIO() {
     def versionPrefix = 'Version:'
     try {
+        // maven-help-plugin 3.0.0 fixes the following bug, which occasionally caused the wrong version
+        // to be displayed: https://issues.apache.org/jira/browse/MPH-53
         def desc = sh(script: 'mvn org.apache.maven.plugins:maven-help-plugin:3.0.0:describe -Popenshift \
         -Dplugin=io.fabric8:fabric8-maven-plugin -Dminimal=true', returnStdout: true).toString()
         def lines = desc.split("\n")
