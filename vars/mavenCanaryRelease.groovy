@@ -7,6 +7,9 @@ import org.apache.maven.model.Profile
 
 @Field final String FMP_STABLE_VERSION = "3.5.38"
 
+// First version of FMP to include 'osio' profile
+@Field final String FMP_OSIO_MIN_VERSION = "3.5.40"
+
 def call(body) {
     // evaluate the body block, and collect configuration into the object
     def config = [:]
@@ -41,8 +44,11 @@ def call(body) {
     if (buildName != null && !buildName.isEmpty()) {
         try {
             def spaceLabel = utils.getSpaceLabelFromBuild(buildName)
-            if (!spaceLabel.isEmpty()) {
-                spaceLabelArg = "-Dfabric8.enricher.fmp-space-label.space=${spaceLabel}"
+            /* Space label enricher is part of 'osio' profile introduced in FMP 3.5.40.
+             * Check version before specifying the profile, as the resource goal will fail
+             * if the profile does not exist. */
+            if (!spaceLabel.isEmpty() && hasFMPProfileForOSIO()) {
+                spaceLabelArg = "-Dfabric8.profile=osio -Dfabric8.enricher.osio-space-label.space=${spaceLabel}"
             }
         } catch (err) {
             echo "Failed to read space label due to: ${err}"
@@ -253,4 +259,28 @@ def addFMPDefinition(pomModel, fmpVersion) {
     fmpProfile.setBuild(build)
 
     pomModel.profiles += fmpProfile
+}
+
+def hasFMPProfileForOSIO() {
+    def versionPrefix = 'Version:'
+    try {
+        // maven-help-plugin 3.0.0 fixes the following bug, which occasionally caused the wrong version
+        // to be displayed: https://issues.apache.org/jira/browse/MPH-53
+        def desc = sh(script: 'mvn org.apache.maven.plugins:maven-help-plugin:3.0.0:describe -Popenshift \
+            -Dplugin=io.fabric8:fabric8-maven-plugin -Dminimal=true', returnStdout: true).toString()
+        def lines = desc.split("\n")
+        for (line in lines) {
+            if (line.startsWith(versionPrefix)) {
+                def version = line.substring(versionPrefix.length()).trim()
+                if (!version.isEmpty()) {
+                    echo "Found fabric8-maven-plugin version ${version}"
+                    return (compareVersions(version, FMP_OSIO_MIN_VERSION) >= 0)
+                }
+            }
+        }
+        echo "No FMP version found in output:\n${desc}"
+    } catch (err) {
+        echo "Failed to determine fabric8-maven-plugin version: ${err}"
+    }
+    return false
 }
