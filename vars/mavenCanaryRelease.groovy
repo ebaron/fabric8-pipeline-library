@@ -274,7 +274,7 @@ def hasFMPProfileForOSIO() {
                 def version = line.substring(versionPrefix.length()).trim()
                 if (!version.isEmpty()) {
                     echo "Found fabric8-maven-plugin version ${version}"
-                    return (compareVersions(version, FMP_OSIO_MIN_VERSION) > 0)
+                    return (compareVersions(version, FMP_OSIO_MIN_VERSION) >= 0)
                 }
             }
         }
