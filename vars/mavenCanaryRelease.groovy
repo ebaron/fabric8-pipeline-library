@@ -261,13 +261,14 @@ def addFMPDefinition(pomModel, fmpVersion) {
 def hasFMPProfileForOSIO() {
     def versionPrefix = 'Version:'
     try {
-        def desc = sh(script: 'mvn org.apache.maven.plugins:maven-help-plugin:3.0.0:describe -Dplugin=io.fabric8:fabric8-maven-plugin -Dminimal=true', returnStdout: true).toString()
+        def desc = sh(script: '''mvn org.apache.maven.plugins:maven-help-plugin:3.0.0:describe -Popenshift
+        -Dplugin=io.fabric8:fabric8-maven-plugin -Dminimal=true''', returnStdout: true).toString()
         def lines = desc.split("\n")
         for (line in lines) {
             if (line.startsWith(versionPrefix)) {
                 def version = line.substring(versionPrefix.length()).trim()
                 if (!version.isEmpty()) {
-                    echo "Found FMP version ${version}"
+                    echo "Found fabric8-maven-plugin version ${version}"
                     return (compareVersions(version, FMP_OSIO_MIN_VERSION) > 0)
                 }
             }
