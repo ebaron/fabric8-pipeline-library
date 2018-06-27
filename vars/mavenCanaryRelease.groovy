@@ -7,8 +7,8 @@ import org.apache.maven.model.Profile
 
 @Field final String FMP_STABLE_VERSION = "3.5.38"
 
-// First version of FMP to include 'osio' profile
-@Field final String FMP_OSIO_MIN_VERSION = "3.5.40"
+// First version of FMP to include 'osio' profile. Should not be modified.
+@Field final String FMP_OSIO_PROFILE_MIN_VERSION = "3.5.40"
 
 def call(body) {
     // evaluate the body block, and collect configuration into the object
@@ -274,7 +274,7 @@ def hasFMPProfileForOSIO() {
                 def version = line.substring(versionPrefix.length()).trim()
                 if (!version.isEmpty()) {
                     echo "Found fabric8-maven-plugin version ${version}"
-                    return (compareVersions(version, FMP_OSIO_MIN_VERSION) >= 0)
+                    return (compareVersions(version, FMP_OSIO_PROFILE_MIN_VERSION) >= 0)
                 }
             }
         }
