@@ -5,7 +5,7 @@ import org.apache.maven.model.Plugin
 import org.apache.maven.model.PluginExecution
 import org.apache.maven.model.Profile
 
-@Field final String FMP_STABLE_VERSION = "3.5.38"
+@Field final String FMP_STABLE_VERSION = "3.5.40"
 
 // First version of FMP to include 'osio' profile. Should not be modified.
 @Field final String FMP_OSIO_PROFILE_MIN_VERSION = "3.5.40"
@@ -200,14 +200,14 @@ def patchPluginBasedOnParent(plugin, parent) {
         return false
     }
 
-    if (parent.artifactId == "booster-parent" && compareVersions(parent.version, "20") < 0) {
-        println "patching maven plugin for booster-parent parent v20"
+    if (parent.artifactId == "booster-parent" && compareVersions(parent.version, "23") < 0) {
+        println "patching maven plugin for booster-parent parent v23"
         plugin.version = FMP_STABLE_VERSION
         return true
     }
 
-    if (parent.artifactId == "spring-boot-booster-parent" && compareVersions(parent.version, "1.5.10-15") < 0) {
-        println "patching maven plugin for spring-boot-booster-parent v1.5.10-15"
+    if (parent.artifactId == "spring-boot-booster-parent") {
+        println "patching maven plugin for spring-boot-booster-parent"
         plugin.version = FMP_STABLE_VERSION
         return true;
     }
@@ -222,14 +222,14 @@ def patchProfileBasedOnParent(pomModel) {
         return false
     }
 
-    if (parent.artifactId == "booster-parent" && compareVersions(parent.version, "20") < 0) {
-        println "patching maven plugin for booster-parent parent v20"
+    if (parent.artifactId == "booster-parent" && compareVersions(parent.version, "23") < 0) {
+        println "patching maven plugin for booster-parent parent v23"
         addFMPDefinition(pomModel, FMP_STABLE_VERSION)
         return true
     }
 
-    if (parent.artifactId == "spring-boot-booster-parent" && compareVersions(parent.version, "1.5.10-15") < 0) {
-        println "patching maven plugin for spring-boot-booster-parent v1.5.10-15"
+    if (parent.artifactId == "spring-boot-booster-parent") {
+        println "patching maven plugin for spring-boot-booster-parent"
         addFMPDefinition(pomModel, FMP_STABLE_VERSION)
         return true;
     }
